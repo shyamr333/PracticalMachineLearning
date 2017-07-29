@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-As we have a large Training data set, our cross-validation will be done by splitting our original training set into 2 subsets (randomly without replacement): TrainSet (70%) and CrossValidSet (30%). The random forest model will be developed using the TrainSet, and then tested on the CrossValidSet. Then the most accurate model choosen will be tested on the original 'testing' data set, which has precisely 20 observations.The first model tested was Random Forest and it gave a decent level of accuracy on the CrossValidSet (99.24%). Therefore, that model was chosen
+As we have a large Training data set, our cross-validation will be done by splitting our original training set into 2 subsets (randomly without replacement): TrainSet (70%) and CrossValidSet (30%). The random forest model will be developed using the TrainSet, and then tested on the CrossValidSet. Then the most accurate model choosen will be tested on the original 'testing' data set, which has precisely 20 observations.The first model tested was Random Forest and it gave a decent level of accuracy on the CrossValidSet (99.35%). Therefore, that model was chosen
 
 Importing the necessary packages
 
