@@ -1,0 +1,85 @@
+---
+title: "FinalProject"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+As we have a large Training data set, our cross-validation will be done by splitting our original training set into 2 subsets (randomly without replacement): TrainSet (70%) and CrossValidSet (30%). The random forest model will be developed using the TrainSet, and then tested on the CrossValidSet. Then the most accurate model choosen will be tested on the original 'testing' data set, which has precisely 20 observations.The first model tested was Random Forest and it gave a decent level of accuracy on the CrossValidSet (99.24%). Therefore, that model was chosen
+
+Importing the necessary packages
+
+```{r cars}
+library(caret) 
+library(randomForest)
+```
+
+Getting and Preparing Data
+
+```{r numtwo}
+#download the training and test sets in your local directory before implementing the following code
+
+training <- read.csv("pml-training.csv")
+testing <- read.csv("pml-testing.csv")
+
+#finding and remving variables which have very low variance
+
+NZV <- nearZeroVar(training)
+training <- training[,-NZV]
+testing <- testing[, - NZV]
+```
+
+By implmenting the following code, we see that every column in the dataset has either 0 NA values or 19216 NA values, which is more than 97% of the values. Therefore, we will only consider those columns which have 0 NA values.
+
+```{r numthree}
+table(colSums(is.na(training)))
+```
+
+```{r numfour}
+goodCols <- colSums(is.na(training)) == 0
+training <- training[, goodCols]
+testing <- testing[,goodCols]
+
+#remove the first 7 columns, which do not make intuitive sense for prediction purposes.
+
+training <- training[, -c(1:7)]
+testing <- testing[, -c(1:7)]
+```
+
+
+Now we have our training and test sets, with only the pertinent variables. Now we will divide the training set for cross validation purposes
+
+```{r numfive}
+inTrain <- createDataPartition(training$classe, p = 0.7, list = FALSE)
+TrainSet <- training[inTrain,]
+CrossValidSet <- training[-inTrain,]
+dim(TrainSet)
+dim(CrossValidSet)
+```
+
+Modelling
+
+We implement a Random Forest model
+
+```{r numsix}
+modelFit <- randomForest(classe ~., data = TrainSet, method = 'class')
+```
+
+Now we use this model to predict on the CrossValidSet and ascertain the accuracy
+
+```{r numseven}
+prediction <- predict(modelFit,CrossValidSet, type = 'class')
+confusionMatrix(prediction, CrossValidSet$classe)
+```
+
+As we can see, we have 99.35 percent accuracy i.e. out of sample error is 0.65. This is good enough to use and therefore, we do not try any other model. Now, we simply predict the values for the original testing data set.
+
+```{r eight}
+final_prediction <- predict(modelFit, testing, type = 'class')
+final_prediction
+```
+
